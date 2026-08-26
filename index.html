@@ -17,69 +17,45 @@ body{background:#000;color:#fff;overflow:hidden}
 @keyframes ex2{0%{opacity:1}100%{transform:translate(-55px,-55px) scale(0);opacity:0}}
 @keyframes ex3{0%{opacity:1}100%{transform:translate(55px,55px) scale(0);opacity:0}}
 @keyframes ex4{0%{opacity:1}100%{transform:translate(-55px,55px) scale(0);opacity:0}}
+
 #lock{position:fixed;inset:0;background:#000;z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-#lock.show{display:flex}
-.lock-card{width:100%;max-width:340px;background:#111;border:1px solid #222;border-radius:24px;padding:28px;text-align:center}
-.lock-card input{width:100%;background:#000;border:1px solid #333;border-radius:12px;padding:14px 16px;color:#fff;font-size:18px;outline:none;text-align:center}
-.lock-card .main-btn{width:100%;margin-top:16px;background:#fff;color:#000;border:none;border-radius:12px;padding:14px;font-weight:700}
-.reset-btn{margin-top:12px;background:transparent;border:none;color:#666;font-size:12px;text-decoration:underline}
-#app{display:none;height:100vh;flex-direction:column;background:#0a0a0a}
+#lock.show{display:flex}.lock-card{width:100%;max-width:340px;background:#111;border:1px solid #222;border-radius:24px;padding:28px;text-align:center}
+.lock-card input{width:100%;background:#000;border:1px solid #333;border-radius:12px;padding:14px;color:#fff;font-size:18px;text-align:center;outline:none}
+.main-btn{width:100%;margin-top:16px;background:#fff;color:#000;border:none;border-radius:12px;padding:14px;font-weight:700}.reset-btn{margin-top:12px;background:transparent;border:none;color:#666;font-size:12px;text-decoration:underline}
+
+#app{display:none;height:100vh;flex-direction:column;background:#000}
 #app.open{display:flex}
-.app-header{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
-.chat-area{flex:1;display:flex;align-items:center;justify-content:center;color:#444}
+.header{height:56px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.header b{font-size:16px}
+.chat-list{flex:1;overflow-y:auto;padding:12px}
+.chat-item{display:flex;gap:12px;padding:12px;background:#0f0f0f;border-radius:14px;margin-bottom:10px}
+.avatar{width:44px;height:44px;background:#222;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.chat-item div span{font-size:12px;color:#666}
 </style>
 </head>
 <body>
 
-<div id="splash">
-  <div class="logo-wrap" id="wrap"><div class="logo-box">Y</div><div class="star-main">🌟</div><div class="p p1">✦</div><div class="p p2">✦</div><div class="p p3">✦</div><div class="p p4">✦</div></div>
-</div>
+<div id="splash"><div class="logo-wrap" id="wrap"><div class="logo-box">Y</div><div class="star-main">🌟</div><div class="p p1">✦</div><div class="p p2">✦</div><div class="p p3">✦</div><div class="p p4">✦</div></div></div>
 
-<div id="lock">
-  <div class="lock-card">
-    <h2 id="lockTitle">Set Start Pass</h2>
-    <p style="color:#666;font-size:13px;margin:8px 0 20px">Kuch bhi rakho</p>
-    <input id="passInput" type="text" placeholder="e.g. 1234 or my pass">
-    <button class="main-btn" id="passBtn">Set Pass</button>
-    <button class="reset-btn" id="resetBtn" style="display:none">Reset Pass</button>
-    <p id="error" style="color:#ff4444;margin-top:12px;font-size:12px;display:none">Wrong pass</p>
-  </div>
-</div>
+<div id="lock"><div class="lock-card"><h2 id="lockTitle">Set Start Pass</h2><p style="color:#666;font-size:13px;margin:8px 0 20px">Kuch bhi rakho</p><input id="passInput" type="text" placeholder="e.g. 1234"><button class="main-btn" id="passBtn">Set Pass</button><button class="reset-btn" id="resetBtn" style="display:none">Reset Pass</button><p id="error" style="color:#ff4444;margin-top:12px;font-size:12px;display:none">Wrong pass</p></div></div>
 
 <div id="app">
-  <div class="app-header">
-    <b>YChat.official</b>
-    <button onclick="resetPass()" style="background:#222;border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px">Reset Pass</button>
+  <div class="header"><b>YChat.official</b><button onclick="resetPass()" style="background:#222;border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px">Reset Pass</button></div>
+  <div class="chat-list">
+    <div class="chat-item"><div class="avatar">K</div><div><b>Kuber</b><br><span>Hey bro, YChat ready hai ✅</span></div></div>
+    <div class="chat-item"><div class="avatar">Y</div><div><b>YChat Team</b><br><span>Welcome to official app</span></div></div>
+    <div class="chat-item"><div class="avatar">A</div><div><b>Ajay</b><br><span>kab aa raha hai?</span></div></div>
   </div>
-  <div class="chat-area">Welcome to YChat - App Started ✅</div>
 </div>
 
 <script>
 const splash=document.getElementById('splash'),wrap=document.getElementById('wrap'),lock=document.getElementById('lock'),app=document.getElementById('app');
 const title=document.getElementById('lockTitle'),input=document.getElementById('passInput'),btn=document.getElementById('passBtn'),resetBtn=document.getElementById('resetBtn'),error=document.getElementById('error');
-
-function showLock(){
-  const saved=localStorage.getItem('ychat_start_pass');
-  if(saved){title.innerText='Enter Pass';btn.innerText='Unlock';resetBtn.style.display='block';}else{title.innerText='Set Start Pass';btn.innerText='Set Pass';resetBtn.style.display='none';}
-  lock.classList.add('show');
-  app.classList.remove('open');
-}
+function showLock(){const s=localStorage.getItem('ychat_start_pass');if(s){title.innerText='Enter Pass';btn.innerText='Unlock';resetBtn.style.display='block';}else{title.innerText='Set Start Pass';btn.innerText='Set Pass';resetBtn.style.display='none';}lock.classList.add('show');app.classList.remove('open');}
 function openApp(){lock.classList.remove('show');app.classList.add('open');}
-
-window.addEventListener('load',()=>{
-  setTimeout(()=>wrap.classList.add('animate'),800);
-  setTimeout(()=>{splash.style.opacity='0';setTimeout(()=>{splash.remove();showLock();},500);},1600);
-});
-
-btn.onclick=()=>{
-  const val=input.value.trim(); if(!val)return;
-  const saved=localStorage.getItem('ychat_start_pass');
-  if(!saved){localStorage.setItem('ychat_start_pass',val);openApp();}
-  else{if(val===saved){openApp();}else{error.style.display='block';setTimeout(()=>error.style.display='none',2000);}}
-};
-
-function resetPass(){localStorage.removeItem('ychat_start_pass');input.value='';showLock();}
-resetBtn.onclick=resetPass;
+window.addEventListener('load',()=>{setTimeout(()=>wrap.classList.add('animate'),800);setTimeout(()=>{splash.style.opacity='0';setTimeout(()=>{splash.remove();showLock();},500);},1600);});
+btn.onclick=()=>{const v=input.value.trim();if(!v)return;const s=localStorage.getItem('ychat_start_pass');if(!s){localStorage.setItem('ychat_start_pass',v);openApp();}else{if(v===s){openApp();}else{error.style.display='block';setTimeout(()=>error.style.display='none',2000);}}};
+function resetPass(){localStorage.removeItem('ychat_start_pass');input.value='';showLock();}resetBtn.onclick=resetPass;
 </script>
 </body>
 </html>
