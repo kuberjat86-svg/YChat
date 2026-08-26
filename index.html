@@ -10,24 +10,23 @@
 body{background:#000;color:#fff;overflow:hidden}
 #splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
 .logo-wrap{position:relative;width:120px;height:120px}.logo-box{width:120px;height:120px;background:#151515;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:75px;font-weight:900}
-.star-main{position:absolute;top:-10px;right:-10px;font-size:36px}
-.p{position:absolute;top:0;right:0;opacity:0}
+.star-main{position:absolute;top:-10px;right:-10px;font-size:36px}.p{position:absolute;top:0;right:0;opacity:0}
 .animate .star-main{animation:blast .6s forwards}.animate .p1{animation:ex1 .75s .08s forwards}.animate .p2{animation:ex2 .75s .08s forwards}.animate .p3{animation:ex3 .75s .08s forwards}.animate .p4{animation:ex4 .75s .08s forwards}
 @keyframes blast{0%{transform:scale(1)}100%{transform:scale(0) rotate(200deg);opacity:0}}
 @keyframes ex1{0%{opacity:1}100%{transform:translate(55px,-55px) scale(0);opacity:0}}
 @keyframes ex2{0%{opacity:1}100%{transform:translate(-55px,-55px) scale(0);opacity:0}}
 @keyframes ex3{0%{opacity:1}100%{transform:translate(55px,55px) scale(0);opacity:0}}
 @keyframes ex4{0%{opacity:1}100%{transform:translate(-55px,55px) scale(0);opacity:0}}
-
-/* LOCK SCREEN */
 #lock{position:fixed;inset:0;background:#000;z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
 #lock.show{display:flex}
 .lock-card{width:100%;max-width:340px;background:#111;border:1px solid #222;border-radius:24px;padding:28px;text-align:center}
-.lock-card h2{font-size:22px;margin-bottom:8px}.lock-card p{color:#666;font-size:13px;margin-bottom:20px}
-.lock-card input{width:100%;background:#000;border:1px solid #333;border-radius:12px;padding:14px 16px;color:#fff;font-size:18px;outline:none;text-align:center;letter-spacing:2px}
-.lock-card button{width:100%;margin-top:16px;background:#fff;color:#000;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:15px}
-.lock-card button:active{transform:scale(.98)}
-#app{display:flex;height:100vh;align-items:center;justify-content:center;flex-direction:column}
+.lock-card input{width:100%;background:#000;border:1px solid #333;border-radius:12px;padding:14px 16px;color:#fff;font-size:18px;outline:none;text-align:center}
+.lock-card .main-btn{width:100%;margin-top:16px;background:#fff;color:#000;border:none;border-radius:12px;padding:14px;font-weight:700}
+.reset-btn{margin-top:12px;background:transparent;border:none;color:#666;font-size:12px;text-decoration:underline}
+#app{display:none;height:100vh;flex-direction:column;background:#0a0a0a}
+#app.open{display:flex}
+.app-header{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
+.chat-area{flex:1;display:flex;align-items:center;justify-content:center;color:#444}
 </style>
 </head>
 <body>
@@ -39,67 +38,48 @@ body{background:#000;color:#fff;overflow:hidden}
 <div id="lock">
   <div class="lock-card">
     <h2 id="lockTitle">Set Start Pass</h2>
-    <p id="lockDesc">Kuch bhi rakho - number, text, emoji</p>
-    <input id="passInput" type="text" placeholder="e.g. 1234 or kuber@07">
-    <button id="passBtn">Set Pass</button>
+    <p style="color:#666;font-size:13px;margin:8px 0 20px">Kuch bhi rakho</p>
+    <input id="passInput" type="text" placeholder="e.g. 1234 or my pass">
+    <button class="main-btn" id="passBtn">Set Pass</button>
+    <button class="reset-btn" id="resetBtn" style="display:none">Reset Pass</button>
     <p id="error" style="color:#ff4444;margin-top:12px;font-size:12px;display:none">Wrong pass</p>
   </div>
 </div>
 
-<div id="app"><h1>YChat</h1><p>Welcome to YChat.official</p></div>
+<div id="app">
+  <div class="app-header">
+    <b>YChat.official</b>
+    <button onclick="resetPass()" style="background:#222;border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px">Reset Pass</button>
+  </div>
+  <div class="chat-area">Welcome to YChat - App Started ✅</div>
+</div>
 
 <script>
-const splash=document.getElementById('splash');
-const wrap=document.getElementById('wrap');
-const lock=document.getElementById('lock');
-const title=document.getElementById('lockTitle');
-const desc=document.getElementById('lockDesc');
-const input=document.getElementById('passInput');
-const btn=document.getElementById('passBtn');
-const error=document.getElementById('error');
+const splash=document.getElementById('splash'),wrap=document.getElementById('wrap'),lock=document.getElementById('lock'),app=document.getElementById('app');
+const title=document.getElementById('lockTitle'),input=document.getElementById('passInput'),btn=document.getElementById('passBtn'),resetBtn=document.getElementById('resetBtn'),error=document.getElementById('error');
 
 function showLock(){
   const saved=localStorage.getItem('ychat_start_pass');
-  if(saved){
-    title.innerText='Enter Pass';
-    desc.innerText='Start pass daalo to continue';
-    btn.innerText='Unlock';
-  }else{
-    title.innerText='Set Start Pass';
-    desc.innerText='Pehli baar kuch bhi pass set karo';
-    btn.innerText='Set Pass';
-  }
+  if(saved){title.innerText='Enter Pass';btn.innerText='Unlock';resetBtn.style.display='block';}else{title.innerText='Set Start Pass';btn.innerText='Set Pass';resetBtn.style.display='none';}
   lock.classList.add('show');
+  app.classList.remove('open');
 }
+function openApp(){lock.classList.remove('show');app.classList.add('open');}
 
 window.addEventListener('load',()=>{
   setTimeout(()=>wrap.classList.add('animate'),800);
-  setTimeout(()=>{
-    splash.style.opacity='0';
-    setTimeout(()=>{
-      splash.remove();
-      showLock();
-    },500);
-  },1600);
+  setTimeout(()=>{splash.style.opacity='0';setTimeout(()=>{splash.remove();showLock();},500);},1600);
 });
 
 btn.onclick=()=>{
-  const val=input.value.trim();
-  if(!val){input.style.borderColor='#ff4444';return;}
+  const val=input.value.trim(); if(!val)return;
   const saved=localStorage.getItem('ychat_start_pass');
-  if(!saved){
-    localStorage.setItem('ychat_start_pass',val);
-    lock.classList.remove('show');
-  }else{
-    if(val===saved){
-      lock.classList.remove('show');
-    }else{
-      error.style.display='block';
-      input.style.borderColor='#ff4444';
-      setTimeout(()=>{error.style.display='none';input.style.borderColor='#333'},2000);
-    }
-  }
+  if(!saved){localStorage.setItem('ychat_start_pass',val);openApp();}
+  else{if(val===saved){openApp();}else{error.style.display='block';setTimeout(()=>error.style.display='none',2000);}}
 };
+
+function resetPass(){localStorage.removeItem('ychat_start_pass');input.value='';showLock();}
+resetBtn.onclick=resetPass;
 </script>
 </body>
 </html>
