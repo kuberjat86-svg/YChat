@@ -1,55 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YChat</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YChat.official</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.header{height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #222}
-.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px}
-.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#ff0050,#6a5cff,#00f2ff);border-radius:10px;display:grid;place-items:center;animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 #6a5cff}70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.chat-item{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #111}
-.chat-item img{width:54px;height:54px;border-radius:50%}
-#chatScreen{position:fixed;inset:0;background:#000;z-index:99;display:none;flex-direction:column}
-.c-head{height:62px;display:flex;align-items:center;gap:12px;padding:0 12px;border-bottom:1px solid #222}
-.c-head img{width:34px;height:34px;border-radius:50%}
-#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
-.bub{max-width:75%;padding:10px 14px;border-radius:18px;font-size:14.5px;animation:pop.25s}
-@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
-.me{align-self:flex-end;background:#0095f6;border-bottom-right-radius:5px}
-.other{align-self:flex-start;background:#262626;border-bottom-left-radius:5px}
-.inputBar{display:flex;gap:8px;padding:10px;border-top:1px solid #222}
-.inputBar input{flex:1;background:#262626;border:none;padding:11px 16px;border-radius:22px;color:#fff;outline:none}
-.icon-btn{width:38px;height:38px;display:grid;place-items:center;background:#262626;border-radius:50%}
-#emojiBox{position:absolute;bottom:65px;left:12px;right:12px;background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:10px;display:none;grid-template-columns:repeat(8,1fr);gap:6px}
-#emojiBox span{font-size:22px;text-align:center}
-.private{background:#111;border:1px solid #222;margin:12px;padding:10px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+body{background:#000;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh}
+.box{background:#111;padding:30px;border-radius:20px;text-align:center}
+.logo{width:100px;height:100px;background:#000;border-radius:20px;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 15px}
+.logo b{font-size:70px;color:#fff}
+.logo span{position:absolute;top:-10px;right:-10px;animation:glow 1s infinite alternate}
+@keyframes glow{from{transform:scale(1)}to{transform:scale(1.3)}}
 </style>
 </head>
 <body>
-<div class="header"><div class="logo"><div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>YChat</div><i class="fa-solid fa-ellipsis-v"></i></div>
-<div style="flex:1;overflow-y:auto" id="home">
-<div class="private"><div><b style="font-size:13px"><i class="fa-solid fa-lock"></i> Private Mode</b><div style="font-size:11px;color:#888">encrypted</div></div><div style="color:#0f0">● ON</div></div>
-<div id="list"></div>
+<div class="box">
+<div class="logo"><b>Y</b><span>🌟</span></div>
+<h2>YChat.official</h2>
+<p style="opacity:.6">Coming back...</p>
 </div>
-<div id="chatScreen">
-<div class="c-head"><i class="fa-solid fa-arrow-left" onclick="closeChat()"></i><img id="cimg"><b id="cname"></b><span style="margin-left:auto;color:#0f0;font-size:11px"><i class="fa-solid fa-lock"></i> private</span></div>
-<div id="msgs"></div>
-<div style="position:relative"><div id="emojiBox"></div><div class="inputBar"><div class="icon-btn" onclick="toggleEmoji()"><i class="fa-regular fa-face-smile"></i></div><input id="inp" placeholder="Message..."><div class="icon-btn" style="background:#0095f6" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></div></div></div>
-</div>
-<script>
-let users=[{name:"kuber_jat",img:"https://i.pravatar.cc/100?img=1"},{name:"private_girl",img:"https://i.pravatar.cc/100?img=5"},{name:"bestie",img:"https://i.pravatar.cc/100?img=3"}];
-let cur=0,chats=JSON.parse(localStorage.getItem('ychat_final')||'{}');
-function renderList(){let l=document.getElementById('list');l.innerHTML='';users.forEach((u,i)=>{let d=document.createElement('div');d.className='chat-item';d.innerHTML=`<img src="${u.img}"><div><b style="font-size:14px">${u.name} 🔒</b><div style="font-size:12px;color:#888">${(chats[i]&&chats[i].slice(-1)[0]?.t)||'Tap for private chat'}</div></div>`;d.onclick=()=>openChat(i);l.appendChild(d)})}
-function openChat(i){cur=i;document.getElementById('chatScreen').style.display='flex';document.getElementById('cname').innerText=users[i].name;document.getElementById('cimg').src=users[i].img;renderMsgs()}
-function closeChat(){document.getElementById('chatScreen').style.display='none';renderList()}
-function renderMsgs(){let b=document.getElementById('msgs');b.innerHTML='';(chats[cur]||[]).forEach(m=>{let x=document.createElement('div');x.className='bub '+(m.me?'me':'other');x.innerText=m.t;b.appendChild(x)});b.scrollTop=b.scrollHeight}
-function sendMsg(){let inp=document.getElementById('inp');if(!inp.value.trim())return;if(!chats[cur])chats[cur]=[];chats[cur].push({t:inp.value,me:true});localStorage.setItem('ychat_final',JSON.stringify(chats));inp.value='';renderMsgs()}
-let emojis=["😍","😂","🔥","❤️","👀","😎","🥺","🤝","💀","😭","🙏","✨","💯","😈","🥰"];let box=document.getElementById('emojiBox');emojis.forEach(e=>{let s=document.createElement('span');s.innerText=e;s.onclick=()=>document.getElementById('inp').value+=e;box.appendChild(s)});function toggleEmoji(){box.style.display=box.style.display==='grid'?'none':'grid'}
-document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg()});renderList();
-</script>
 </body>
 </html>
