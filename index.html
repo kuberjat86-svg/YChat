@@ -1,1 +1,82 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>YChat.official</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}body{background:#000;color:#fff;height:100vh;overflow:hidden}#intro{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:.8s}.logo-box{width:120px;height:120px;background:#111;border-radius:28px;display:flex;align-items:center;justify-content:center;position:relative}.logo-box h1{font-size:90px;color:#fff;font-weight:900}.star{position:absolute;top:-12px;right:-12px;font-size:28px;animation:glow 1.2s infinite alternate}.screen{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;z-index:10}.screen.active{display:flex}.card{width:100%;max-width:340px;background:#111;border-radius:20px;padding:22px;border:1px solid #222}input{width:100%;padding:13px;background:#000;border:1px solid #333;border-radius:12px;color:#fff;margin:8px 0}button{width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:12px;font-weight:700;margin-top:10px}.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:10px 0;max-height:180px;overflow:auto}.emoji-grid span{font-size:22px;background:#000;border:1px solid #222;border-radius:10px;padding:8px;text-align:center}.pass{font-size:26px;letter-spacing:6px;background:#000;padding:10px;border-radius:10px;text-align:center;min-height:48px;border:1px solid #333}#app{display:none;height:100vh;flex-direction:column}.header{padding:14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}.chat-list{flex:1;overflow:auto;padding:10px}.chat-item{padding:14px;background:#111;border-radius:12px;margin-bottom:8px;border:1px solid #222;display:flex;justify-content:space-between}#chatView{display:none;flex-direction:column;height:100vh}.messages{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}.msg{max-width:75%;padding:10px 14px;border-radius:14px}.me{align-self:flex-end;background:#fff;color:#000}.other{align-self:flex-start;background:#222}.input-bar{display:flex;gap:8px;padding:10px;border-top:1px solid #222}@keyframes glow{0%{transform:scale(1)}100%{transform:scale(1.4);filter:drop-shadow(0 0 15px gold)}}@keyframes fly{0%{transform:translateY(100px) scale(0)}100%{transform:translateY(0) scale(1)}}#intro.logo-box{animation:fly 1.2s ease-out}</style></head><body><div id='intro'><div class='logo-box'><h1>Y</h1><div class='star'>🌟</div></div><p style='margin-top:16px;letter-spacing:3px;opacity:.5'>YChat.official</p></div><div id='register' class='screen'><div class='card'><h3>Welcome to YChat</h3><p style='font-size:11px;opacity:.5'>First time setup</p><input id='regName' placeholder='Username'><input id='regGmail' placeholder='Gmail'><button onclick='doRegister()'>Verify Gmail</button></div></div><div id='setEmoji' class='screen'><div class='card'><h3>Set 3 Emoji Password</h3><div id='setDisplay' class='pass'></div><div id='emojiGrid1' class='emoji-grid'></div><button onclick='saveEmojiPass()'>Save & Enter</button><button onclick='tempPass=[];updateSet()' style='background:#222;color:#fff'>Clear</button></div></div><div id='login' class='screen'><div class='card'><h3 id='welcomeText'>Welcome back</h3><div id='loginDisplay' class='pass'></div><div id='emojiGrid2' class='emoji-grid'></div><button onclick='doLogin()'>Unlock YChat</button><p onclick='localStorage.clear();location.reload()' style='text-align:center;font-size:11px;opacity:.3;margin-top:10px'>Reset?</p></div></div><div id='app'><div class='header'><div style='display:flex;gap:8px;align-items:center'><div class='logo-box' style='width:36px;height:36px;border-radius:10px'><h1 style='font-size:22px'>Y</h1><div class='star' style='font-size:12px'>🌟</div></div><b>YChat.official</b></div><div style='display:flex;gap:14px;font-size:20px'><span onclick='newPrivate()'>🌟</span><span onclick='newChat()'>+</span></div></div><div id='chatList' class='chat-list'></div></div><div id='chatView'><div class='header'><span onclick='showChats()'>⬅</span><b id='chatTitle'>Chat</b><span></span></div><div id='msgs' class='messages'></div><div class='input-bar'><input id='msgInput' placeholder='Message...'><button onclick='sendMsg()' style='width:60px'>➤</button></div></div><div id='privateLock' class='screen' style='background:rgba(0,0,0,.9)'><div class='card'><h3>🌟 Private Locked</h3><div id='privateDisplay' class='pass'></div><div id='emojiGrid3' class='emoji-grid'></div><button onclick='unlockPrivate()'>Unlock</button><button onclick='document.getElementById("privateLock").classList.remove("active")' style='background:#222;color:#fff'>Cancel</button></div></div><script>const emojis=['😀','😂','😎','❤️','🔥','🌟','💀','👑','😈','🥺','🤍','🖤','💯','✨','🎯','🚀','💎','🍀','🌙','⚡','👀','💋','😘','🥰','😏','🤫','🫶','💅','🦋','🌹'];let tempPass=[],loginPass=[],privateTemp=[],currentChat=null,isPrivate=false;let chats=JSON.parse(localStorage.getItem('ychat_chats')||'[]');let privateChats=JSON.parse(localStorage.getItem('ychat_private')||'[]');function initGrids(){['emojiGrid1','emojiGrid2','emojiGrid3'].forEach(id=>{let g=document.getElementById(id);g.innerHTML='';emojis.forEach(e=>{let s=document.createElement('span');s.textContent=e;s.onclick=()=>{if(id=='emojiGrid1'&&tempPass.length<3){tempPass.push(e);updateSet()}if(id=='emojiGrid2'&&loginPass.length<3){loginPass.push(e);document.getElementById('loginDisplay').textContent=loginPass.join('')}if(id=='emojiGrid3'&&privateTemp.length<3){privateTemp.push(e);document.getElementById('privateDisplay').textContent=privateTemp.join('')}};g.appendChild(s)})})}function updateSet(){document.getElementById('setDisplay').textContent=tempPass.join('')}function doRegister(){let n=document.getElementById('regName').value.trim();let g=document.getElementById('regGmail').value.trim();if(!n||!g.includes('@')){alert('Username + Gmail sahi daal');return}localStorage.setItem('ychat_name',n);localStorage.setItem('ychat_gmail',g);document.getElementById('register').classList.remove('active');document.getElementById('setEmoji').classList.add('active')}function saveEmojiPass(){if(tempPass.length!=3){alert('3 emoji choose kar');return}localStorage.setItem('ychat_emoji',JSON.stringify(tempPass));localStorage.setItem('ychat_private_emoji',JSON.stringify(tempPass));startApp()}function doLogin(){let saved=JSON.parse(localStorage.getItem('ychat_emoji')||'[]');if(JSON.stringify(saved)==JSON.stringify(loginPass)){startApp()}else{alert('Wrong emoji');loginPass=[];document.getElementById('loginDisplay').textContent=''}}function startApp(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('intro').style.display='none';document.getElementById('app').style.display='flex';renderChats()}function renderChats(){let list=document.getElementById('chatList');list.innerHTML='';if(chats.length==0&&privateChats.length==0){list.innerHTML="<p style='opacity:.4;text-align:center;margin-top:30px'>No chats yet</p>";return}chats.forEach((c,i)=>{let d=document.createElement('div');d.className='chat-item';d.innerHTML=`<div><b>${c.name}</b></div><span>➤</span>`;d.onclick=()=>openChat(i,false);list.appendChild(d)});privateChats.forEach((c,i)=>{let d=document.createElement('div');d.className='chat-item';d.style.borderColor='gold';d.innerHTML=`<div><b>🌟 ${c.name}</b></div><span>🔒</span>`;d.onclick=()=>{currentChat=i;isPrivate=true;document.getElementById('privateLock').classList.add('active');privateTemp=[];document.getElementById('privateDisplay').textContent=''};list.appendChild(d)})}function newChat(){let name=prompt('Chat name?');if(!name)return;chats.push({name,msgs:[]});save();renderChats()}function newPrivate(){let name=prompt('Private chat name?');if(!name)return;privateChats.push({name,msgs:[]});save();renderChats()}function openChat(i,p){isPrivate=p;currentChat=i;let c=p?privateChats[i]:chats[i];document.getElementById('app').style.display='none';document.getElementById('chatView').style.display='flex';document.getElementById('chatTitle').textContent=(p?'🌟 ':'')+c.name;renderMsgs()}function renderMsgs(){let c=isPrivate?privateChats[currentChat]:chats[currentChat];let box=document.getElementById('msgs');box.innerHTML='';c.msgs.forEach(m=>{let d=document.createElement('div');d.className='msg '+(m.me?'me':'other');d.textContent=m.text;box.appendChild(d)});box.scrollTop=box.scrollHeight}function sendMsg(){let inp=document.getElementById('msgInput');let t=inp.value.trim();if(!t)return;let c=isPrivate?privateChats[currentChat]:chats[currentChat];c.msgs.push({text:t,me:true});inp.value='';save();renderMsgs()}function save(){localStorage.setItem('ychat_chats',JSON.stringify(chats));localStorage.setItem('ychat_private',JSON.stringify(privateChats))}function showChats(){document.getElementById('chatView').style.display='none';document.getElementById('app').style.display='flex';renderChats()}function unlockPrivate(){let saved=JSON.parse(localStorage.getItem('ychat_private_emoji')||'[]');if(JSON.stringify(saved)==JSON.stringify(privateTemp)){document.getElementById('privateLock').classList.remove('active');openChat(currentChat,true)}else{alert('Wrong');privateTemp=[];document.getElementById('privateDisplay').textContent=''}}window.onload=()=>{initGrids();setTimeout(()=>{document.getElementById('intro').style.transform='translateY(-100%)';let name=localStorage.getItem('ychat_name');let emoji=localStorage.getItem('ychat_emoji');if(!name){document.getElementById('register').classList.add('active')}else if(!emoji){document.getElementById('setEmoji').classList.add('active')}else{document.getElementById('login').classList.add('active');document.getElementById('welcomeText').textContent='Hi '+name+' 👋'}},1700)}</script></body></html> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YChat.official</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#000;color:#fff;overflow:hidden}
+
+/* SPLASH */
+#splash{
+  position:fixed;inset:0;background:#000;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:9999;transition:opacity .5s ease
+}
+.logo-wrap{position:relative;width:120px;height:120px}
+.logo-box{
+  width:120px;height:120px;background:#151515;
+  border-radius:28px;display:flex;
+  align-items:center;justify-content:center;
+  font-size:75px;font-weight:900;color:#fff;
+  box-shadow:0 10px 40px rgba(255,255,255,.1);
+}
+.star-main{position:absolute;top:-10px;right:-10px;font-size:36px;z-index:5}
+.p{position:absolute;top:0;right:0;font-size:16px;opacity:0;z-index:4}
+
+.animate .star-main{animation:blast .6s cubic-bezier(.175,.885,.32,1.275) forwards}
+.animate .p1{animation:ex1 .75s .08s cubic-bezier(.2,.8,.2,1) forwards}
+.animate .p2{animation:ex2 .75s .08s cubic-bezier(.2,.8,.2,1) forwards}
+.animate .p3{animation:ex3 .75s .08s cubic-bezier(.2,.8,.2,1) forwards}
+.animate .p4{animation:ex4 .75s .08s cubic-bezier(.2,.8,.2,1) forwards}
+
+@keyframes blast{0%{transform:scale(1) rotate(0)}50%{transform:scale(1.4) rotate(90deg)}100%{transform:scale(0) rotate(200deg);opacity:0}}
+@keyframes ex1{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(55px,-55px) scale(0) rotate(180deg);opacity:0}}
+@keyframes ex2{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(-55px,-55px) scale(0) rotate(-180deg);opacity:0}}
+@keyframes ex3{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(55px,55px) scale(0) rotate(180deg);opacity:0}}
+@keyframes ex4{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(-55px,55px) scale(0) rotate(-180deg);opacity:0}}
+
+.brand{margin-top:24px;color:#666;letter-spacing:4px;font-size:14px;opacity:0;animation:fadeUp .6s .4s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* MAIN APP - demo */
+#app{display:flex;height:100vh;align-items:center;justify-content:center;flex-direction:column}
+#app h1{font-size:48px;font-weight:900}
+#app p{color:#555;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="logo-wrap" id="wrap">
+    <div class="logo-box">Y</div>
+    <div class="star-main">🌟</div>
+    <div class="p p1">✦</div>
+    <div class="p p2">✦</div>
+    <div class="p p3">✦</div>
+    <div class="p p4">✦</div>
+  </div>
+  <div class="brand">YChat.official</div>
+</div>
+
+<div id="app">
+  <h1>YChat</h1>
+  <p>Welcome to YChat.official</p>
+</div>
+
+<script>
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('wrap').classList.add('animate');
+  },800);
+  setTimeout(()=>{
+    document.getElementById('splash').style.opacity='0';
+    setTimeout(()=>document.getElementById('splash').remove(),500);
+  },1600);
+});
+</script>
+</body>
+</html>
