@@ -1,64 +1,121 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YChat</title>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:#000;color:#fff}#splash{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:99999;transition:.6s}.logo{width:90px;height:90px;background:#fff;color:#000;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:900;animation:p .8s infinite alternate}@keyframes p{to{transform:scale(1.08)}}#lock{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:9990}.card{background:#141414;border:1px solid #222;padding:26px;border-radius:22px;width:88%;max-width:320px;text-align:center}.card input{width:100%;padding:14px;margin-top:12px;background:#000;border:1px solid #333;border-radius:12px;color:#fff;text-align:center}.card button{width:100%;margin-top:14px;padding:14px;background:#fff;color:#000;border:none;border-radius:12px;font-weight:800}#app{display:none;height:100vh;flex-direction:column}#app.open{display:flex}.top{height:56px;background:#0f0f0f;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;padding:0 16px;justify-content:space-between}.list{flex:1;overflow:auto;padding:12px}.item{display:flex;gap:12px;padding:14px;background:#111;border:1px solid #1e1e1e;margin-bottom:10px;border-radius:16px;cursor:pointer}.av{width:42px;height:42px;background:#222;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}#chat{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:8000}#chat.open{display:flex}.chead{height:56px;background:#0f0f0f;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid #1a1a1a}.msgs{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}.msg{max-width:75%;padding:10px 14px;border-radius:18px;font-size:14px;word-break:break-word}.me{align-self:flex-end;background:#fff;color:#000;border-bottom-right-radius:6px}.other{align-self:flex-start;background:#222;color:#fff;border-bottom-left-radius:6px}.bar{display:flex;gap:8px;padding:10px;background:#0f0f0f;border-top:1px solid #1a1a1a}.bar input{flex:1;padding:12px 16px;border-radius:22px;border:1px solid #333;background:#000;color:#fff}.bar button{width:42px;height:42px;border-radius:50%;border:none;background:#fff;font-weight:900}</style></head><body><div id="splash"><div class="logo">Y</div></div><div id="lock"><div class="card"><h3>YChat</h3><p style="color:#777;font-size:12px;margin-top:4px">Insta Style Real Chat</p><input id="pIn" type="password" placeholder="Passcode - 1234"><input id="nIn" placeholder="Tera Naam - Kuber / Ajay"><button onclick="go()">Unlock & Start Chat</button></div></div><div id="app"><div class="top"><b>YChat.official</b><span style="font-size:11px;color:#0f0">● LIVE</span></div><div class="list" id="list"></div></div><div id="chat"><div class="chead"><button onclick="closeC()" style="background:none;border:none;color:#fff;font-size:22px">←</button><b id="cName"></b></div><div class="msgs" id="msgs"></div><div class="bar"><input id="mIn" placeholder="Message..."><button onclick="send()">↑</button></div></div><script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YChat v23</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+body{background:#fff;height:100vh;overflow:hidden}
+#welcome{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99;transition:.7s}
+.y-box{position:relative;width:110px;height:110px;background:#111;border-radius:26px;display:flex;align-items:center;justify-content:center}
+.y-box b{color:#fff;font-size:58px}
+.star{position:absolute;width:20px;height:20px;background:radial-gradient(circle,#7dd3fc 0%,#3b82f6 40%,transparent 70%);border-radius:50%;box-shadow:0 0 10px #3b82f6,0 0 20px #60a5fa;animation:shine 1.8s infinite}
+.s1{top:-8px;right:-8px}.s2{bottom:-6px;left:-10px;animation-delay:.4s;scale:.8}.s3{top:15px;left:-10px;animation-delay:.8s;scale:.7}.s4{bottom:8px;right:-6px;animation-delay:1.2s;scale:.9}
+@keyframes shine{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.5) rotate(180deg)}}
+#auth{max-width:360px;margin:auto;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:20px}
+input{width:100%;padding:15px;border:1.5px solid #e5e7eb;border-radius:14px;margin:7px 0;outline:none}
+.btn{width:100%;padding:15px;background:#111;color:#fff;border:none;border-radius:14px;font-weight:700;margin-top:10px;cursor:pointer}
+.link{text-align:center;margin-top:12px;color:#666;font-size:14px;cursor:pointer}
+#app{display:none;height:100vh;flex-direction:column}
+.top{padding:12px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.userCard{padding:12px 16px;border-bottom:1px solid #f6f6f6;display:flex;justify-content:space-between;align-items:center}
+.followBtn{padding:7px 14px;border-radius:20px;border:1px solid #111;background:#fff;font-weight:700;font-size:12px;cursor:pointer}
+.followBtn.following{background:#111;color:#fff}
+#chatView{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fafafa}
+.msg{max-width:75%;padding:10px 14px;border-radius:18px;font-size:14px}
+.msg.me{align-self:flex-end;background:#111;color:#fff;border-bottom-right-radius:4px}
+.msg.other{align-self:flex-start;background:#fff;border:1px solid #eee;border-bottom-left-radius:4px}
+</style>
+</head>
+<body>
+<div id="welcome"><div class="y-box"><b>Y</b><div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div></div><h2 style="margin-top:18px;font-weight:800">Welcome YChat</h2></div>
+<div id="auth">
+<div class="y-box" style="width:72px;height:72px;margin:0 auto 14px;border-radius:18px"><b style="font-size:38px">Y</b><div class="star s1"></div></div>
+<h2 id="aTitle" style="text-align:center;margin-bottom:10px">Login to YChat</h2>
+<input id="u" placeholder="Username"><input id="g" placeholder="Gmail"><input id="p" type="password" placeholder="Password">
+<button class="btn" onclick="auth()">Login</button>
+<div class="link" onclick="toggle()">Don't have account? Create one</div>
+</div>
+<div id="app">
+<div class="top"><b>YChat</b><span id="myName" style="background:#111;color:#fff;padding:5px 10px;border-radius:20px;font-size:12px"></span></div>
+<div style="display:flex;gap:8px;padding:10px"><input id="search" placeholder="Search user..." oninput="loadUsers()"><button class="btn" style="width:auto;margin:0;padding:0 16px" onclick="loadUsers()">Search</button></div>
+<div id="list" style="flex:1;overflow:auto"></div>
+<div id="chatBox" style="display:none;flex:1;flex-direction:column">
+<div class="top"><b id="chatWith"></b><span onclick="closeChat()" style="cursor:pointer;font-weight:800">X</span></div>
+<div id="chatView"></div>
+<div style="padding:10px;display:flex;gap:8px;border-top:1px solid #eee"><input id="msg" placeholder="Message..."><button class="btn" style="width:auto;margin:0;padding:0 18px" onclick="send()">Send</button></div>
+</div>
+</div>
+<script>
 const firebaseConfig = {
-  apiKey: "AIzaSyDIBwaQmRsg54HX6uM4T6Yi2HzGt_nn6zA",
+  apiKey: "AIzaSyDIBwaQmRsg54HX6uM4T6L8v2Z2Z3Z3Z3Z3Z3Z3Z3",
   authDomain: "ychat-2b217.firebaseapp.com",
-  databaseURL: "https://ychat-2b217-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://ychat-2b217-default-rtdb.firebaseio.com",
   projectId: "ychat-2b217",
-  storageBucket: "ychat-2b217.firebasestorage.app",
-  messagingSenderId: "971940150616",
-  appId: "1:971940150616:web:b925b3d55afbe37cc2b92d",
-  measurementId: "G-QTPRNJJLLK"
+  storageBucket: "ychat-2b217.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
 };
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-setTimeout(()=>{let s=document.getElementById('splash'); s.style.opacity='0'; setTimeout(()=>s.style.display='none',500)},900);
-let myName='',curChat='';
-function go(){
- let p=document.getElementById('pIn').value;
- let n=document.getElementById('nIn').value.trim();
- if(!p||!n) return alert('Naam + Pass bhar bhai');
- let s=localStorage.getItem('pass');
- if(s && s!==p) return alert('Wrong pass');
- localStorage.setItem('pass',p); localStorage.setItem('yname',n);
- myName=n;
- document.getElementById('lock').style.display='none';
- document.getElementById('app').classList.add('open');
- render();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let mode='login';
+let cur = JSON.parse(localStorage.getItem('yc_cur')||'null');
+setTimeout(()=>{document.getElementById('welcome').style.transform='translateY(-100%)'; if(cur) showApp();},1600);
+function toggle(){mode=mode==='login'?'signup':'login';document.getElementById('aTitle').innerText=mode==='login'?'Login to YChat':'Create Account';document.querySelector('#auth .btn').innerText=mode==='login'?'Login':'Create';document.querySelector('.link').innerText=mode==='login'?"Don't have account? Create one":"Already have account? Login"}
+function auth(){
+  let username=document.getElementById('u').value.toLowerCase().trim();
+  let gmail=document.getElementById('g').value.trim();
+  let pass=document.getElementById('p').value.trim();
+  if(!username||!gmail||!pass) return alert('sab bharo');
+  let ref=db.ref('users/'+username);
+  if(mode==='signup'){
+    ref.once('value',s=>{
+      if(s.exists()) return alert('username taken');
+      ref.set({u:username,g:gmail,p:pass});
+      alert('ban gaya, ab login karo'); toggle();
+    });
+  } else {
+    ref.once('value',s=>{
+      if(!s.exists()||s.val().p!==pass) return alert('galat password');
+      cur=s.val(); localStorage.setItem('yc_cur',JSON.stringify(cur)); showApp();
+    });
+  }
 }
-if(localStorage.getItem('yname')){document.getElementById('nIn').value=localStorage.getItem('yname');}
-function getChatId(a,b){return [a,b].sort().join('_').toLowerCase().replace(/[^a-z0-9_]/g,'')}
-const allUsers=['Kuber','Ajay','Rahul','YChat Team','Sahil','Aman'];
-function render(){
- let l=document.getElementById('list'); l.innerHTML='';
- allUsers.forEach(u=>{
-  if(u.toLowerCase()===myName.toLowerCase()) return;
-  let d=document.createElement('div'); d.className='item';
-  d.innerHTML=`<div class="av">${u[0]}</div><div><b>${u}</b><div style="font-size:11px;color:#666">tap to chat - real time</div></div>`;
-  d.onclick=()=>openC(u); l.appendChild(d);
- })
+function showApp(){document.getElementById('auth').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('myName').innerText='@'+cur.u;loadUsers();}
+function loadUsers(){
+  let q=document.getElementById('search').value.toLowerCase();
+  db.ref('users').once('value',snap=>{
+    let list=document.getElementById('list'); list.innerHTML='';
+    snap.forEach(c=>{
+      let x=c.val(); if(x.u===cur.u) return; if(q && !x.u.includes(q)) return;
+      db.ref('follows/'+cur.u+'/'+x.u).once('value',fs=>{
+        let isF=fs.exists();
+        let div=document.createElement('div'); div.className='userCard';
+        div.innerHTML=`<div><b>@${x.u}</b><div style="font-size:11px;color:#888">${x.g}</div></div><div style="display:flex;gap:6px"><button class="followBtn ${isF?'following':''}" onclick="follow('${x.u}')">${isF?'Following':'Follow'}</button><button class="followBtn" style="background:#111;color:#fff" onclick="openChat('${x.u}')">Chat</button></div>`;
+        list.appendChild(div);
+      });
+    });
+  });
 }
-function openC(name){
- curChat=name; document.getElementById('cName').innerText=name;
- document.getElementById('chat').classList.add('open');
- let msgs=document.getElementById('msgs'); msgs.innerHTML='';
- let chatId=getChatId(myName,name);
- db.ref('chats/'+chatId).off();
- db.ref('chats/'+chatId).on('child_added',snap=>{
-  let m=snap.val();
-  let div=document.createElement('div');
-  div.className='msg '+(m.sender===myName?'me':'other');
-  div.innerText=m.text;
-  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
- });
+function follow(u){let r=db.ref('follows/'+cur.u+'/'+u);r.once('value',s=>{ if(s.exists()) r.remove(); else r.set(true); setTimeout(loadUsers,300); });}
+let active=null, listener=null;
+function openChat(u){
+  db.ref('follows/'+cur.u+'/'+u).once('value',s=>{
+    if(!s.exists()) return alert('pehle follow karo');
+    active=u; document.getElementById('list').style.display='none'; document.getElementById('chatBox').style.display='flex'; document.getElementById('chatWith').innerText='@'+u; document.getElementById('chatView').innerHTML='';
+    let key=[cur.u,u].sort().join('_');
+    if(listener) listener.off();
+    listener=db.ref('chats/'+key);
+    listener.on('child_added',snap=>{
+      let m=snap.val(); let div=document.createElement('div'); div.className='msg '+(m.from===cur.u?'me':'other'); div.innerText=m.text; document.getElementById('chatView').appendChild(div); document.getElementById('chatView').scrollTop=100000;
+    });
+  });
 }
-function closeC(){document.getElementById('chat').classList.remove('open'); curChat='';}
-function send(){
- let i=document.getElementById('mIn'); let t=i.value.trim(); if(!t||!curChat) return;
- let chatId=getChatId(myName,curChat);
- db.ref('chats/'+chatId).push({sender:myName,text:t,time:Date.now()});
- i.value='';
-}
-document.getElementById('mIn').addEventListener('keydown',e=>{if(e.key==='Enter') send()});
-</script></body></html>
+function closeChat(){active=null; if(listener) listener.off(); document.getElementById('list').style.display='block'; document.getElementById('chatBox').style.display='none';}
+function send(){let t=document.getElementById('msg').value.trim(); if(!t||!active) return; let key=[cur.u,active].sort().join('_'); db.ref('chats/'+key).push({from:cur.u,text:t,time:Date.now()}); document.getElementById('msg').value='';}
+</script>
+</body>
+</html>
