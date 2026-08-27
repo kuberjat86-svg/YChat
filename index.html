@@ -3,119 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YChat v23</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<title>YChat</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
-body{background:#fff;height:100vh;overflow:hidden}
-#welcome{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99;transition:.7s}
-.y-box{position:relative;width:110px;height:110px;background:#111;border-radius:26px;display:flex;align-items:center;justify-content:center}
-.y-box b{color:#fff;font-size:58px}
-.star{position:absolute;width:20px;height:20px;background:radial-gradient(circle,#7dd3fc 0%,#3b82f6 40%,transparent 70%);border-radius:50%;box-shadow:0 0 10px #3b82f6,0 0 20px #60a5fa;animation:shine 1.8s infinite}
-.s1{top:-8px;right:-8px}.s2{bottom:-6px;left:-10px;animation-delay:.4s;scale:.8}.s3{top:15px;left:-10px;animation-delay:.8s;scale:.7}.s4{bottom:8px;right:-6px;animation-delay:1.2s;scale:.9}
-@keyframes shine{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.5) rotate(180deg)}}
-#auth{max-width:360px;margin:auto;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:20px}
-input{width:100%;padding:15px;border:1.5px solid #e5e7eb;border-radius:14px;margin:7px 0;outline:none}
-.btn{width:100%;padding:15px;background:#111;color:#fff;border:none;border-radius:14px;font-weight:700;margin-top:10px;cursor:pointer}
-.link{text-align:center;margin-top:12px;color:#666;font-size:14px;cursor:pointer}
-#app{display:none;height:100vh;flex-direction:column}
-.top{padding:12px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
-.userCard{padding:12px 16px;border-bottom:1px solid #f6f6f6;display:flex;justify-content:space-between;align-items:center}
-.followBtn{padding:7px 14px;border-radius:20px;border:1px solid #111;background:#fff;font-weight:700;font-size:12px;cursor:pointer}
-.followBtn.following{background:#111;color:#fff}
-#chatView{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fafafa}
-.msg{max-width:75%;padding:10px 14px;border-radius:18px;font-size:14px}
-.msg.me{align-self:flex-end;background:#111;color:#fff;border-bottom-right-radius:4px}
-.msg.other{align-self:flex-start;background:#fff;border:1px solid #eee;border-bottom-left-radius:4px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto}
+body{background:#fff;overflow:hidden;height:100vh}
+
+/* --- PREMIUM WELCOME SCREEN --- */
+#welcome{
+  position:fixed;inset:0;z-index:999;
+  background:radial-gradient(1200px 600px at 50% -10%,#f5f5f5 0%,#ffffff 55%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:transform .9s cubic-bezier(.77,0,.18,1), opacity .6s;
+}
+.logo-premium{
+  position:relative;width:132px;height:132px;
+  background:#0a0a0a;border-radius:32px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.25), inset 0 1px 1px rgba(255,255,255,.2);
+  animation:logoFloat 3s ease-in-out infinite;
+}
+.logo-premium b{
+  font-size:68px;font-weight:900;color:#fff;letter-spacing:-2px;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+@keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.02)}}
+
+/* Shining stars */
+.star{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff 0%,#aee2ff 15%,#60a5fa 35%,#3b82f6 55%,transparent 75%);
+  box-shadow:0 0 12px #60a5fa,0 0 28px #3b82f6,0 0 40px rgba(59,130,246,.6);
+  animation:starShine 2.2s ease-in-out infinite;
+}
+.s1{width:24px;height:24px;top:-10px;right:-10px;animation-delay:0s}
+.s2{width:18px;height:18px;bottom:-8px;left:-12px;animation-delay:.35s}
+.s3{width:14px;height:14px;top:18px;left:-14px;animation-delay:.7s}
+.s4{width:20px;height:20px;bottom:14px;right:-12px;animation-delay:1.05s}
+@keyframes starShine{
+  0%,100%{opacity:0;transform:scale(.2) rotate(0deg) }
+  20%{opacity:1}
+  50%{opacity:1;transform:scale(1.6) rotate(180deg)}
+  80%{opacity:0;transform:scale(.3) rotate(360deg)}
+}
+.welcome-text{margin-top:28px;text-align:center}
+.welcome-text h1{font-size:32px;font-weight:900;letter-spacing:-1px}
+.welcome-text p{color:#888;margin-top:6px;font-size:14px;letter-spacing:.2px}
+
+/* --- LOGIN --- */
+#loginPage{
+  height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;max-width:380px;margin:0 auto;
+}
+.login-card{
+  width:100%;background:#fff;border:1px solid #eee;border-radius:24px;
+  padding:28px 22px;box-shadow:0 10px 40px rgba(0,0,0,.06);
+}
+.inp{
+  width:100%;padding:16px 16px;border:1.5px solid #ececec;border-radius:14px;
+  margin:8px 0;font-size:15px;outline:none;transition:.2s;background:#fafafa;
+}
+.inp:focus{border-color:#111;background:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.06)}
+.btn{
+  width:100%;padding:16px;background:#111;color:#fff;border:none;border-radius:14px;
+  font-weight:800;font-size:15px;margin-top:14px;cursor:pointer;transition:.2s;
+}
+.btn:active{transform:scale(.98)}
 </style>
 </head>
 <body>
-<div id="welcome"><div class="y-box"><b>Y</b><div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div></div><h2 style="margin-top:18px;font-weight:800">Welcome YChat</h2></div>
-<div id="auth">
-<div class="y-box" style="width:72px;height:72px;margin:0 auto 14px;border-radius:18px"><b style="font-size:38px">Y</b><div class="star s1"></div></div>
-<h2 id="aTitle" style="text-align:center;margin-bottom:10px">Login to YChat</h2>
-<input id="u" placeholder="Username"><input id="g" placeholder="Gmail"><input id="p" type="password" placeholder="Password">
-<button class="btn" onclick="auth()">Login</button>
-<div class="link" onclick="toggle()">Don't have account? Create one</div>
+
+<div id="welcome">
+  <div class="logo-premium"><b>Y</b><div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div></div>
+  <div class="welcome-text"><h1>YChat</h1><p>Premium • Fast • Private</p></div>
 </div>
-<div id="app">
-<div class="top"><b>YChat</b><span id="myName" style="background:#111;color:#fff;padding:5px 10px;border-radius:20px;font-size:12px"></span></div>
-<div style="display:flex;gap:8px;padding:10px"><input id="search" placeholder="Search user..." oninput="loadUsers()"><button class="btn" style="width:auto;margin:0;padding:0 16px" onclick="loadUsers()">Search</button></div>
-<div id="list" style="flex:1;overflow:auto"></div>
-<div id="chatBox" style="display:none;flex:1;flex-direction:column">
-<div class="top"><b id="chatWith"></b><span onclick="closeChat()" style="cursor:pointer;font-weight:800">X</span></div>
-<div id="chatView"></div>
-<div style="padding:10px;display:flex;gap:8px;border-top:1px solid #eee"><input id="msg" placeholder="Message..."><button class="btn" style="width:auto;margin:0;padding:0 18px" onclick="send()">Send</button></div>
+
+<div id="loginPage">
+  <div class="logo-premium" style="width:72px;height:72px;border-radius:18px;margin-bottom:18px"><b style="font-size:36px">Y</b><div class="star s1" style="width:14px;height:14px"></div></div>
+  <div class="login-card">
+    <h2 style="font-weight:900;margin-bottom:4px">Login</h2>
+    <p style="color:#888;font-size:13px;margin-bottom:14px">Username & Password only</p>
+    <input id="u" class="inp" placeholder="Username">
+    <input id="p" class="inp" type="password" placeholder="Password">
+    <button class="btn" onclick="loginCheck()">Login</button>
+  </div>
 </div>
-</div>
+
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDIBwaQmRsg54HX6uM4T6L8v2Z2Z3Z3Z3Z3Z3Z3Z3",
-  authDomain: "ychat-2b217.firebaseapp.com",
-  databaseURL: "https://ychat-2b217-default-rtdb.firebaseio.com",
-  projectId: "ychat-2b217",
-  storageBucket: "ychat-2b217.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-let mode='login';
-let cur = JSON.parse(localStorage.getItem('yc_cur')||'null');
-setTimeout(()=>{document.getElementById('welcome').style.transform='translateY(-100%)'; if(cur) showApp();},1600);
-function toggle(){mode=mode==='login'?'signup':'login';document.getElementById('aTitle').innerText=mode==='login'?'Login to YChat':'Create Account';document.querySelector('#auth .btn').innerText=mode==='login'?'Login':'Create';document.querySelector('.link').innerText=mode==='login'?"Don't have account? Create one":"Already have account? Login"}
-function auth(){
-  let username=document.getElementById('u').value.toLowerCase().trim();
-  let gmail=document.getElementById('g').value.trim();
-  let pass=document.getElementById('p').value.trim();
-  if(!username||!gmail||!pass) return alert('sab bharo');
-  let ref=db.ref('users/'+username);
-  if(mode==='signup'){
-    ref.once('value',s=>{
-      if(s.exists()) return alert('username taken');
-      ref.set({u:username,g:gmail,p:pass});
-      alert('ban gaya, ab login karo'); toggle();
-    });
-  } else {
-    ref.once('value',s=>{
-      if(!s.exists()||s.val().p!==pass) return alert('galat password');
-      cur=s.val(); localStorage.setItem('yc_cur',JSON.stringify(cur)); showApp();
-    });
-  }
+setTimeout(()=>{document.getElementById('welcome').style.transform='translateY(-100%)'; document.getElementById('welcome').style.opacity='0';}, 2200);
+function loginCheck(){
+  let u=document.getElementById('u').value.trim();
+  let p=document.getElementById('p').value.trim();
+  if(!u||!p){alert('Username Password bhar');return;}
+  alert('Login UI OK - next me Firebase jodenge');
 }
-function showApp(){document.getElementById('auth').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('myName').innerText='@'+cur.u;loadUsers();}
-function loadUsers(){
-  let q=document.getElementById('search').value.toLowerCase();
-  db.ref('users').once('value',snap=>{
-    let list=document.getElementById('list'); list.innerHTML='';
-    snap.forEach(c=>{
-      let x=c.val(); if(x.u===cur.u) return; if(q && !x.u.includes(q)) return;
-      db.ref('follows/'+cur.u+'/'+x.u).once('value',fs=>{
-        let isF=fs.exists();
-        let div=document.createElement('div'); div.className='userCard';
-        div.innerHTML=`<div><b>@${x.u}</b><div style="font-size:11px;color:#888">${x.g}</div></div><div style="display:flex;gap:6px"><button class="followBtn ${isF?'following':''}" onclick="follow('${x.u}')">${isF?'Following':'Follow'}</button><button class="followBtn" style="background:#111;color:#fff" onclick="openChat('${x.u}')">Chat</button></div>`;
-        list.appendChild(div);
-      });
-    });
-  });
-}
-function follow(u){let r=db.ref('follows/'+cur.u+'/'+u);r.once('value',s=>{ if(s.exists()) r.remove(); else r.set(true); setTimeout(loadUsers,300); });}
-let active=null, listener=null;
-function openChat(u){
-  db.ref('follows/'+cur.u+'/'+u).once('value',s=>{
-    if(!s.exists()) return alert('pehle follow karo');
-    active=u; document.getElementById('list').style.display='none'; document.getElementById('chatBox').style.display='flex'; document.getElementById('chatWith').innerText='@'+u; document.getElementById('chatView').innerHTML='';
-    let key=[cur.u,u].sort().join('_');
-    if(listener) listener.off();
-    listener=db.ref('chats/'+key);
-    listener.on('child_added',snap=>{
-      let m=snap.val(); let div=document.createElement('div'); div.className='msg '+(m.from===cur.u?'me':'other'); div.innerText=m.text; document.getElementById('chatView').appendChild(div); document.getElementById('chatView').scrollTop=100000;
-    });
-  });
-}
-function closeChat(){active=null; if(listener) listener.off(); document.getElementById('list').style.display='block'; document.getElementById('chatBox').style.display='none';}
-function send(){let t=document.getElementById('msg').value.trim(); if(!t||!active) return; let key=[cur.u,active].sort().join('_'); db.ref('chats/'+key).push({from:cur.u,text:t,time:Date.now()}); document.getElementById('msg').value='';}
 </script>
 </body>
 </html>
