@@ -94,7 +94,14 @@ function loginCheck(){
   let u=document.getElementById('u').value.trim();
   let p=document.getElementById('p').value.trim();
   if(!u||!p){alert('Username Password bhar');return;}
-  alert('Login UI OK - next me Firebase jodenge');
+  document.getElementById('loginPage').style.transform='scale(.9)';
+  document.getElementById('loginPage').style.opacity='0';
+  setTimeout(()=>{
+    document.getElementById('loginPage').style.display='none';
+    let bp=document.getElementById('blackPage');
+    bp.style.display='flex';
+    setTimeout(()=>{bp.classList.add('show')},20);
+  },300);
 }
 </script>
 </body>
