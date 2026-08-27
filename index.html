@@ -87,7 +87,21 @@ body{background:#fff;overflow:hidden;height:100vh}
     <button class="btn" onclick="loginCheck()">Login</button>
   </div>
 </div>
+<div id="blackPage" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:none;flex-direction:column;z-index:5;">
 
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+    <div style="font-size:60px;font-weight:900;">Y</div>
+    <div style="color:#888;">Welcome</div>
+  </div>
+
+  <div style="height:65px;background:#111;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;">
+    <div style="font-size:26px">⌂</div>
+    <div style="font-size:22px">💭</div>
+    <div style="font-size:22px">🔍</div>
+    <div style="font-size:24px">★</div>
+  </div>
+
+</div>
 <script>
 setTimeout(()=>{document.getElementById('welcome').style.transform='translateY(-100%)'; document.getElementById('welcome').style.opacity='0';}, 2200);
 function loginCheck(){
@@ -106,3 +120,4 @@ function loginCheck(){
 </script>
 </body>
 </html>
+
