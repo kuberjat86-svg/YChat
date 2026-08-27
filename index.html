@@ -93,18 +93,18 @@ body{background:#fff;overflow:hidden;height:100vh}
   </div>
 
   <div style="height:65px;background:#111;border-top:1px solid #222;display:flex;color:white;justify-content:space-around;align-items:center;">
-    <div style="font-size:26px">⌂</div>
-    <div style="font-size:22px">💭</div>
-    <div style="font-size:22px">🔍</div>
-    <div style="font-size:24px">★</div>
+    <div style="font-size:26px;color:white">⌂</div>
+    <div style="font-size:22px;color:white">💭</div>
+    <div style="font-size:22px;color:white">🔍</div>
+    <div style="font-size:24px;color:white">★</div>
   </div>
 
 </div>
 <script>
 setTimeout(()=>{document.getElementById('welcome').style.transform='translateY(-100%)'; document.getElementById('welcome').style.opacity='0';}, 2200);
 function loginCheck(){
-  let u=document.getElementById('u').value.trim();
-  let p=document.getElementById('p').value.trim();
+  let u=document.getElementById('user').value.trim();
+let p=document.getElementById('pass').value.trim();
   if(!u||!p){alert('Username Password bhar');return;}
   document.getElementById('loginPage').style.transform='scale(.9)';
   document.getElementById('loginPage').style.opacity='0';
